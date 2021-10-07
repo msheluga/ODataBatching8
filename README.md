@@ -6,8 +6,9 @@ in the supplemental data folder is the SQL necessary to generate the tables and 
 
 to execute the tests cou can either use 
 
---Non Json Package batch
-
+## Non Json Package batch
+### curl
+```
 curl --location --request POST 'https://localhost:44367/odata/$batch' \
 --header 'Content-Type: multipart/mixed; boundary=batch_AAA123' \
 --header 'Accept: multipart/mixed' \
@@ -30,15 +31,16 @@ Accept-Charset: UTF-8
 User-Agent: Microsoft ADO.NET Data Services
 
 --batch_AAA123--'
-
-to do this in Postman
-
-Request Headers
+```
+### Postman
+#### Headers 
+```
 Content-Type: multipart/mixed; boundary=batch_AAA123
 Accept: multipart/mixed
 ForceUseSession: true
-
-Body: 
+```
+#### Body
+```
 --batch_AAA123
 Content-Type: application/http
 Content-Transfer-Encoding: binary
@@ -58,10 +60,11 @@ Accept-Charset: UTF-8
 User-Agent: Microsoft ADO.NET Data Services
 
 --batch_AAA123--
+```
 
-
---Json Package batch
-
+## Json Package batch
+### curl
+```
 curl --location --request POST 'https://localhost:44367/odata/$batch' \
 --header 'Content-Type: application/json' \
 --header 'Accept;' \
@@ -84,3 +87,33 @@ curl --location --request POST 'https://localhost:44367/odata/$batch' \
     }
     ]
 }'
+```
+### Postman
+#### Request Headers
+```
+Content-Type : application/json
+Accept : 
+ForceUseSession : true
+```
+#### Body
+```
+{
+    "requests": [
+        {
+            "id": "0",
+            "method": "get",
+            "url": "Books/a35be09d-004b-d2df-7ae5-0725e602aed7"
+        },
+        {
+            "id": "1",
+            "method": "get",
+            "url": "Users/975ffc54-795e-c9f0-6774-0883f1643b2e"
+        },
+        {
+        "id": "2",
+        "method": "get",
+        "url": "Groups/45a19125-3b1c-858e-39a6-2e5d92576714"
+    }
+    ]
+}
+```
