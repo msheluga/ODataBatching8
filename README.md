@@ -7,6 +7,7 @@ in the supplemental data folder is the SQL necessary to generate the tables and 
 to execute the tests cou can either use 
 
 --Non Json Package batch
+
 curl --location --request POST 'https://localhost:44367/odata/$batch' \
 --header 'Content-Type: multipart/mixed; boundary=batch_AAA123' \
 --header 'Accept: multipart/mixed' \
@@ -33,7 +34,6 @@ User-Agent: Microsoft ADO.NET Data Services
 
 --Json Package batch
 
-curl: 
 curl --location --request POST 'https://localhost:44367/odata/$batch' \
 --header 'Content-Type: application/json' \
 --header 'Accept;' \
