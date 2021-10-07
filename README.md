@@ -31,6 +31,34 @@ User-Agent: Microsoft ADO.NET Data Services
 
 --batch_AAA123--'
 
+to do this in Postman
+
+Request Headers
+Content-Type: multipart/mixed; boundary=batch_AAA123
+Accept: multipart/mixed
+ForceUseSession: true
+
+Body: 
+--batch_AAA123
+Content-Type: application/http
+Content-Transfer-Encoding: binary
+
+GET https://localhost:44367/odata/Books/a35be09d-004b-d2df-7ae5-0725e602aed7 HTTP/1.1
+Accept: application/json;odata.metadata=minimal
+Accept-Charset: UTF-8
+User-Agent: Microsoft ADO.NET Data Services
+
+--batch_AAA123
+Content-Type: application/http
+Content-Transfer-Encoding: binary
+
+GET https://localhost:44367/odata/Users/975ffc54-795e-c9f0-6774-0883f1643b2e HTTP/1.1
+Accept: application/json;odata.metadata=minimal
+Accept-Charset: UTF-8
+User-Agent: Microsoft ADO.NET Data Services
+
+--batch_AAA123--
+
 
 --Json Package batch
 
