@@ -38,6 +38,7 @@ namespace ODataBatching8.Controllers
         }
 
         [HttpPatch]
+        [AcceptVerbs("PATCH", "MERGE")]
         public async Task<IActionResult> Patch([FromODataUri] Guid key, Delta<Book> delta)
         {
             var previousEntity = await dbContext.Book.FindAsync(key);
