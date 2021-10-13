@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,35 @@ namespace ODataBatching8.Controllers
         {
             return Ok(await dbContext.Book.Where(x=>x.Id == key).FirstOrDefaultAsync());
         }
+        [HttpPost]
+        public async Task<IActionResult> Post(Book insert)
+        {
+            return Ok(await dbContext.Book.AddAsync(insert));
+        }
+
+        [HttpPatch]
+        public async Task<IActionResult> Patch([FromODataUri] Guid key, Delta<Book> delta)
+        {
+            var previousEntity = await dbContext.Book.FindAsync(key);
+            if (previousEntity == null)
+            {
+                return NotFound();
+            }
+            delta.Patch(previousEntity);
+            return Ok(await dbContext.SaveChangesAsync());
+        }
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromODataUri] Guid key)
+        {
+            var deletingBook = await dbContext.Book.FindAsync(key);
+            if (deletingBook == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(dbContext.Book.Remove(deletingBook));
+        }
+
 
     }
 }
