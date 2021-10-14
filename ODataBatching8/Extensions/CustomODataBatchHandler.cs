@@ -1,16 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.OData.Batch;
-using ODataBatching8.Models;
-using ODataBatching8.Models.Factory;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Configuration;
 using Microsoft.Extensions.Configuration;
-using System.Linq;
-using System.Net;
 using System.Transactions;
+using Microsoft.OData;
+using Microsoft.AspNetCore.OData.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+
 
 namespace ODataBatching8
 {
@@ -22,14 +21,35 @@ namespace ODataBatching8
             _config = configuratiuon;
         }
 
-        public override async Task ProcessBatchAsync(HttpContext context, RequestDelegate nextHandler)
+        public override async Task<IList<ODataBatchResponseItem>> ExecuteRequestMessagesAsync(IEnumerable<ODataBatchRequestItem> requests, RequestDelegate handler)
         {
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            if (requests == null)
             {
-                await base.ProcessBatchAsync(context, nextHandler);
+                throw new Exception(); //Error.ArgumentNull(nameof(requests));
             }
-        }
 
+            if (handler == null)
+            {
+                throw new Exception(); //Error.ArgumentNull(nameof(handler));
+            }
+
+            IList<ODataBatchResponseItem> responses = new List<ODataBatchResponseItem>();
+
+            foreach (ODataBatchRequestItem request in requests)
+            {
+                using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    ODataBatchResponseItem responseItem = await request.SendRequestAsync(handler).ConfigureAwait(false);
+                    responses.Add(responseItem);
+
+                    if (responseItem != null)// && responseItem.IsResponseSuccessful() == false && ContinueOnError == false)
+                    {
+                        break;
+                    }
+                }
+            }
+            return responses;
+        }
 
     }
 }
