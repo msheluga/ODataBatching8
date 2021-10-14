@@ -158,43 +158,43 @@ The methods to use multiple Patch/Post/Update is the same but is a little differ
         {
             "requests": [
                 {
-                "id": "0",
-                "atomicityGroup": "group1",
-                "method": "patch",
-                "url": "Books/a35be09d-004b-d2df-7ae5-0725e602aed7",
-                "headers": {
-                    "Content-Type": "application/json;odata=verbose"
-                },
-                "body": {
-                    "@odata.context": "https://localhost:44367/odata/$metadata#Books/$entity",
-                    "Price": 88.11
-                }
-                },
-                {
-                "id": "1",
-                "atomicityGroup": "group1",
-                "method": "patch",
-                "url": "Books/a35be09d-004b-d2df-7ae5-0725e602aed7",
-                "headers": {
-                    "Content-Type": "application/json;odata=verbose"
-                },
-                "body": {
-                    "@odata.context": "https://localhost:44367/odata/$metadata#Books/$entity",
-                    "Author": "Debbie Macomber 9"
-                }
+                    "id": "0",
+                    "atomicityGroup": "group1",
+                    "method": "patch",
+                    "url": "Books/a35be09d-004b-d2df-7ae5-0725e602aed7",
+                    "headers": {
+                        "Content-Type": "application/json;odata=verbose"
+                    },
+                    "body": {
+                        "@odata.context": "https://localhost:44367/odata/$metadata#Books/$entity",
+                        "Price": 88.11
+                    }
                 },
                 {
-                "id": "2",
-                "atomicityGroup": "group1",
-                "method": "patch",
-                "url": "Books/a35be09d-004b-d2df-7ae5-0725e602aed7",
-                "headers": {
-                    "Content-Type": "application/json;odata=verbose"
+                    "id": "1",
+                    "atomicityGroup": "group1",
+                    "method": "patch",
+                    "url": "Books/a35be09d-004b-d2df-7ae5-0725e602aed7",
+                    "headers": {
+                        "Content-Type": "application/json;odata=verbose"
+                    },
+                    "body": {
+                        "@odata.context": "https://localhost:44367/odata/$metadata#Books/$entity",
+                        "Author": "Debbie Macomber 9"
+                    }
                 },
-                "body": {
-                    "@odata.context": "https://localhost:44367/odata/$metadata#Books/$entity",
-                    "Address": "Think and Grow Rich 2"
-                }
+                {
+                    "id": "2",
+                    "atomicityGroup": "group1",
+                    "method": "patch",
+                    "url": "Books/a35be09d-004b-d2df-7ae5-0725e602aed7",
+                    "headers": {
+                        "Content-Type": "application/json;odata=verbose"
+                    },
+                    "body": {
+                        "@odata.context": "https://localhost:44367/odata/$metadata#Books/$entity",
+                        "Address": "Think and Grow Rich 2"
+                    }
                 }
             ]
         }
