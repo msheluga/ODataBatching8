@@ -6,7 +6,7 @@ in the supplemental data folder is the SQL necessary to generate the tables and 
 
 to execute the tests you can either use Postman or curl.  
 
-## Seies of Gets in one Batch operation
+## Series of Gets calls in one $batch operation
 
 ## Non Json Package batch
 
