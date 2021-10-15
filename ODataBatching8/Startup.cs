@@ -16,7 +16,7 @@ namespace ODataBatching8
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            Configuration = configuration;            
         }
 
         public IConfiguration Configuration { get; }
@@ -28,7 +28,7 @@ namespace ODataBatching8
             //defaultBatchHandler.MessageQuotas.MaxNestingDepth = 2;
             //defaultBatchHandler.MessageQuotas.MaxOperationsPerChangeset = 10;
             //defaultBatchHandler.MessageQuotas.MaxReceivedMessageSize = 100;
-            
+
             var customBatchHandler = new CustomODataBatchHandler(Configuration);
             customBatchHandler.MessageQuotas.MaxOperationsPerChangeset = 10;
             customBatchHandler.MessageQuotas.MaxPartsPerBatch = 10;
@@ -80,6 +80,7 @@ namespace ODataBatching8
                 endpoints.MapControllers();                
             });
         }
+
 
         private static IEdmModel GetEdmModel()
         {

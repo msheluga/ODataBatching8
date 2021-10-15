@@ -4,11 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using Microsoft.OData;
 using Microsoft.AspNetCore.OData.Extensions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using System.Linq;
+using ODataBatching8.Models;
+using System.Transactions;
 
 namespace ODataBatching8
 {
@@ -32,27 +31,19 @@ namespace ODataBatching8
                 throw new Exception(); //Error.ArgumentNull(nameof(handler));
             }
 
-            
 
+            
             IList<ODataBatchResponseItem> responses = new List<ODataBatchResponseItem>();
                               
             foreach (ODataBatchRequestItem request in requests)
             {
-                //using (var transaction = BookContextFactory.Create(DbContextType.SqlServer, _config.GetConnectionString("BookDatabase")).Database.BeginTransaction())
+                if (request is OperationRequestItem operation)
                 {
-                    ODataBatchResponseItem responseItem = await request.SendRequestAsync(handler).ConfigureAwait(false);
-                    responses.Add(responseItem);
-
-                    var wasSuccessful = ((ChangeSetResponseItem)responseItem).Contexts.All(c => c.Response.IsSuccessStatusCode());
-
-                    if (responseItem != null && wasSuccessful)// && responseItem.IsResponseSuccessful() == false && ContinueOnError == false)
-                    {
-                        //transaction.Commit();
-                    }
-                    else
-                    {
-                        //transaction.Rollback();
-                    }
+                    responses.Add(await request.SendRequestAsync(handler));
+                }
+                else
+                {
+                    responses.Add(await ExecuteChangeSet((ChangeSetRequestItem)request, responses, handler));
                 }
                 
             }
@@ -60,5 +51,15 @@ namespace ODataBatching8
             return responses;
         }
 
+        private async Task<ODataBatchResponseItem> ExecuteChangeSet(ChangeSetRequestItem request, IList<ODataBatchResponseItem> responses, RequestDelegate handler)
+        {
+            using TransactionScope scope = new(TransactionScopeAsyncFlowOption.Enabled);
+            var response = (ChangeSetResponseItem)await request.SendRequestAsync(handler);
+            if (response.Contexts.All(c => c.Response.StatusCode >= 200 && c.Response.StatusCode < 300))
+            {
+                scope.Complete();
+            }
+            return response;
+        }
     }
 }

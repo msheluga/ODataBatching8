@@ -11,10 +11,6 @@ namespace ODataBatching8.Models
 {
     public partial class BooksContext : DbContext
     {
-        public BooksContext()
-        {
-        }
-
         public BooksContext(DbContextOptions<BooksContext> options)
             : base(options)
         {

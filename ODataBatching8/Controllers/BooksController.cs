@@ -20,11 +20,13 @@ namespace ODataBatching8.Controllers
         {
             this.dbContextFactory = dbContextFactory;
             this.dbContext = this.dbContextFactory.CreateDbContext();
+            //this.dbContext = booksContext;
         }
 
         [EnableQuery]        
         public IActionResult Get()
         {
+            
             return Ok(dbContext.Book);
         }
 
