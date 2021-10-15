@@ -34,7 +34,7 @@ namespace ODataBatching8
             customBatchHandler.MessageQuotas.MaxPartsPerBatch = 10;
             customBatchHandler.MessageQuotas.MaxNestingDepth = 2;
 
-            services.AddDbContext<BooksContext>(opt =>
+            services.AddDbContextFactory<BooksContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("BookDatabase")));
 
             

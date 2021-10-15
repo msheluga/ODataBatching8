@@ -13,11 +13,13 @@ namespace ODataBatching8.Controllers
 {
     public class BooksController : ControllerBase
     {
+        private readonly IDbContextFactory<BooksContext> dbContextFactory;
         private readonly BooksContext dbContext;
 
-        public BooksController(BooksContext dbContext)
+        public BooksController(IDbContextFactory<BooksContext> dbContextFactory)
         {
-            this.dbContext = dbContext;
+            this.dbContextFactory = dbContextFactory;
+            this.dbContext = this.dbContextFactory.CreateDbContext();
         }
 
         [EnableQuery]        

@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.OData.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.Linq;
-using ODataBatching8.Factories;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace ODataBatching8
 {
@@ -40,24 +38,23 @@ namespace ODataBatching8
                               
             foreach (ODataBatchRequestItem request in requests)
             {
-                using (var transaction = BookContextFactory.Create(DbContextType.SqlServer, _config.GetConnectionString("BookDatabase")).Database.BeginTransaction())
+                //using (var transaction = BookContextFactory.Create(DbContextType.SqlServer, _config.GetConnectionString("BookDatabase")).Database.BeginTransaction())
                 {
                     ODataBatchResponseItem responseItem = await request.SendRequestAsync(handler).ConfigureAwait(false);
                     responses.Add(responseItem);
 
-                    var wasSuccessful = responses.OfType<ChangeSetResponseItem>()
-                        .Select(r => r.Contexts.All(c => c.Response.IsSuccessStatusCode()))
-                        .All(c => c);
+                    var wasSuccessful = ((ChangeSetResponseItem)responseItem).Contexts.All(c => c.Response.IsSuccessStatusCode());
 
                     if (responseItem != null && wasSuccessful)// && responseItem.IsResponseSuccessful() == false && ContinueOnError == false)
                     {
-                        transaction.Commit();
+                        //transaction.Commit();
                     }
                     else
                     {
-                        transaction.Rollback();
+                        //transaction.Rollback();
                     }
                 }
+                
             }
             
             return responses;

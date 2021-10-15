@@ -199,3 +199,63 @@ The methods to use multiple Patch/Post/Update is the same but is a little differ
             ]
         }
     ```
+#### Json Patch Postman $batch sample body with one working transaction
+
+```
+   {
+        "requests": [
+            {
+                "id": "0",
+                "atomicityGroup": "group1",
+                "method": "patch",
+                "url": "Books/a35be09d-004b-d2df-7ae5-0725e602aed7",
+                "headers": {
+                    "Content-Type": "application/json;odata.metadata=minimal; odata.streaming=true"
+                },
+                "body": {
+                    "@odata.context": "https://localhost:44367/odata/$metadata#Books/$entity",
+                    "Price": 22.2222
+                }
+            },
+            {
+                "id": "1",
+                "atomicityGroup": "group1",
+                "method": "patch",
+                "url": "Books/a35be09d-004b-d2df-7ae5-0725e602aed7",
+                "headers": {
+                    "Content-Type": "application/json;odata.metadata=minimal; odata.streaming=true"
+                },
+                "body": {
+                    "@odata.context": "https://localhost:44367/odata/$metadata#Books/$entity",
+                    "Author": "Debbie Macomber 22"
+                }
+            },
+            {
+                "id": "2",
+                "atomicityGroup": "group1",
+                "method": "patch",
+                "url": "Books/a35be09d-004b-d2df-7ae5-0725e602aed7",
+                "headers": {
+                    "Content-Type": "application/json;odata.metadata=minimal; odata.streaming=true"
+                },
+                "body": {              
+                    "@odata.context": "https://localhost:44367/odata/$metadata#Books/$entity", 
+                    "Address": "Think and Grow Rich Group1"
+                }
+            },
+            {
+                "id": "3",
+                "atomicityGroup": "group2",
+                "method": "patch",
+                "url": "Books/a35be09d-004b-d2df-7ae5-0725e602aed7",
+                "headers": {
+                    "Content-Type": "application/json;odata.metadata=minimal; odata.streaming=true"
+                },
+                "body": {              
+                    "@odata.context": "https://localhost:44367/odata/$metadata#Books/$entity", 
+                    "Title": "Think and Grow Rich Group2"
+                }
+            }
+        ]
+    } 
+```
