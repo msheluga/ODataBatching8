@@ -11,6 +11,7 @@ namespace ODataBatching8.Models
 {
     public partial class BooksContext : DbContext
     {
+        //make sure that when using db contextfactory that you don't use the default constructor 
         public BooksContext(DbContextOptions<BooksContext> options)
             : base(options)
         {
