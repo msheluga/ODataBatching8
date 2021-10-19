@@ -21,8 +21,8 @@ RUN dotnet publish "ODataBatching8/ODataBatching8.csproj" -c RELEASE -o /publish
 # final stage/image
 FROM base AS final
 WORKDIR /publish
-EXPOSE 80
+EXPOSE 8080
 EXPOSE 443
-EXPOSE 1443
+EXPOSE 1433
 COPY --from=publish /publish .
 ENTRYPOINT ["dotnet", "ODataBatching8.dll"]

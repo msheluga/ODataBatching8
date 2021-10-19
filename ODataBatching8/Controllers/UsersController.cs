@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.EntityFrameworkCore;
 using ODataBatching8.Models;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,13 @@ namespace ODataBatching8.Controllers
 {
     public class UsersController : ControllerBase
     {
-        private readonly BooksContext dbContext;
+        private readonly IDbContextFactory<BooksContext> dbContextFactory;
+        private BooksContext dbContext;
 
-        public UsersController(BooksContext dbContext)
+        public UsersController(IDbContextFactory<BooksContext> dbContextFactory)
         {
-            this.dbContext = dbContext;
+            this.dbContextFactory = dbContextFactory;
+            dbContext = this.dbContextFactory.CreateDbContext();
         }
 
         [EnableQuery]
