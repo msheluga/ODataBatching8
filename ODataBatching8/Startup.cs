@@ -24,11 +24,6 @@ namespace ODataBatching8
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //var defaultBatchHandler = new DefaultODataBatchHandler();
-            //defaultBatchHandler.MessageQuotas.MaxNestingDepth = 2;
-            //defaultBatchHandler.MessageQuotas.MaxOperationsPerChangeset = 10;
-            //defaultBatchHandler.MessageQuotas.MaxReceivedMessageSize = 100;
-
             var customBatchHandler = new CustomODataBatchHandler(Configuration);
             customBatchHandler.MessageQuotas.MaxOperationsPerChangeset = 10;
             customBatchHandler.MessageQuotas.MaxPartsPerBatch = 10;
@@ -85,9 +80,7 @@ namespace ODataBatching8
         private static IEdmModel GetEdmModel()
         {
             ODataConventionModelBuilder builder = new ODataConventionModelBuilder();            
-            builder.EntitySet<Book>("Books");
-            builder.EntitySet<Groups>("Groups");
-            builder.EntitySet<Users>("Users");           
+            // figure out how to build this on the fly           
 
             return builder.GetEdmModel();
         }
