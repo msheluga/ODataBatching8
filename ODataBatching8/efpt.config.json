@@ -4,7 +4,7 @@
    "ContextNamespace": null,
    "DefaultDacpacSchema": null,
    "FilterSchemas": false,
-   "IncludeConnectionString": true,
+   "IncludeConnectionString": false,
    "ModelNamespace": null,
    "OutputContextPath": null,
    "OutputPath": "Models",
@@ -30,6 +30,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Permission]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Press]",
          "ObjectType": 0
       },
@@ -51,7 +55,7 @@
    "UseInflector": false,
    "UseLegacyPluralizer": false,
    "UseNoConstructor": false,
-   "UseNoDefaultConstructor": false,
+   "UseNoDefaultConstructor": true,
    "UseNoNavigations": false,
    "UseNoObjectFilter": false,
    "UseNodaTime": false,

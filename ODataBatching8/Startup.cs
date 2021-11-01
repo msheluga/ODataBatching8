@@ -1,14 +1,18 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OData.Batch;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 using ODataBatching8.Models;
+using ODataBatching8.Service;
+using System;
 
 namespace ODataBatching8
 {
@@ -32,12 +36,17 @@ namespace ODataBatching8
             services.AddDbContextFactory<BooksContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("BookDatabase")));
 
-            
+            //services.TryAddSingleton<IODataModelProvider, MyODataModelProvider>();
+
+            //services.TryAddEnumerable(
+           //     ServiceDescriptor.Transient<IApplicationModelProvider, MyODataRoutingApplicationModelProvider>());
+
+           // services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, MyODataRoutingMatcherPolicy>());
 
             services.AddControllers().AddOData(opt=>
                 opt.Select().Filter().Count().OrderBy().Expand().EnableQueryFeatures()
-                .AddRouteComponents("odata", GetEdmModel(), customBatchHandler
-                )
+                .AddRouteComponents("odata", BooksContextService.GetEdmModel(Configuration.GetConnectionString("BookDatabase")), customBatchHandler)
+                //.AddRouteComponents("odata",GetEdmModel(), customBatchHandler)
             );
 
             services.AddCors();
@@ -47,6 +56,8 @@ namespace ODataBatching8
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ODataBatching8", Version = "v1" });
             });
         }
+
+        
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -76,14 +87,41 @@ namespace ODataBatching8
             });
         }
 
-
         private static IEdmModel GetEdmModel()
         {
-            ODataConventionModelBuilder builder = new ODataConventionModelBuilder();            
-            // figure out how to build this on the fly           
-
+            ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
+            builder.EntitySet<Book>("Books");
+            builder.EntitySet<Groups>("Groups");
+            builder.EntitySet<Users>("Users");
+            
             return builder.GetEdmModel();
         }
 
+        //private static IEdmModel GetEdmModel()
+        //{
+        //    ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
+        //    builder.Namespace = "WebAPI";
+        //    builder.ContainerName = "DefaultContainer";
+        //    builder.EnableLowerCamelCase();
+
+        //    var booksContextService = new BooksContextService(Configuration.GetConnectionString("BookDatabase"));
+
+        //    var permissionList = BooksContextService.GetPermissionSet();
+        //    //foreach (Type item in GetTypesInNamespace(System.Reflection.Assembly.Load("ProjectDLL"), "NamespaceOfModels"))
+        //    //{
+        //    //    //My models have a key named "Id"
+        //    //    if (item.GetProperty("Id") == null)
+        //    //        continue;
+
+        //    //    EntityTypeConfiguration entityType = builder.AddEntityType(item);
+        //    //    entityType.HasKey(item.GetProperty("Id"));
+        //    //    builder.AddEntitySet(item.Name, entityType);
+        //    //}
+
+        //    return builder.GetEdmModel();
+        //}
+
     }
+
+    
 }
