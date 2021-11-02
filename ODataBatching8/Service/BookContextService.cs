@@ -100,8 +100,6 @@ namespace ODataBatching8.Service
                                 }
                             }
                         }
-                        //model.SetDataServiceVersion(new Version(3, 0, 0, 0));
-                        //model.SetMaxDataServiceVersion(new Version(3, 0, 0, 0));
                     }
 
                 });
