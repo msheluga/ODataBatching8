@@ -25,34 +25,36 @@ namespace ODataBatching8.Service
             var permissions = dbContextFactory.Permission.Where(x => Guid.Equals(x.UserId, testUserId)).ToList();
 
             //GetModel(permissions, oDataModelBuilder);
-            GetModel(permissions, model);
             //return oDataModelBuilder.GetEdmModel();
+            GetModel(permissions, model);
             return model;
         }
         private static void GetModel(List<Permission> permissions, ODataConventionModelBuilder oDataConventionModel)
         {
             const string EdmNamespaceName = "ODataBatching8.Models";
-            permissions.GroupBy(x => x.TableName)
-                .ToList()
+            permissions.OrderBy(x=>x.TableName).GroupBy(x => x.TableName)
+                .ToList()                
                 .ForEach(table =>
                 {
-                    var tableType = Type.GetType(EdmNamespaceName + "." + table.Key);
-                    //builder.AddEntitySet(t.Name, builder.AddEntityType(t));
-                    var typeConfig = oDataConventionModel.AddEntityType(tableType);
-                    var tableTypeProp = tableType.GetProperties();
                     if (table.All(x => x.TableAccessLevel > 0))
                     {
-                        oDataConventionModel.AddEntitySet(table.Key, oDataConventionModel.AddEntityType(tableType));
-                    }
-                    else
-                    {
+                        var tableType = Type.GetType(EdmNamespaceName + "." + table.Key);
+                        //builder.AddEntitySet(t.Name, builder.AddEntityType(t));
+                        var typeConfig = oDataConventionModel.AddEntityType(tableType);
+                        var tableTypeProp = tableType.GetProperties();
+
                         foreach (var prop in tableTypeProp)
                         {
-                            typeConfig.RemoveProperty(prop);
+
+                            if (table.All(x => x.TableAccessLevel == 0))
+                            {
+                                typeConfig.RemoveProperty(prop);
+                            }
                         }
                         //remove the EntitySet
                         //ssoDataConventionModel.RemoveEntitySet(table.Key);
                         //oDataConventionModel.RemoveStructuralType(tableType);
+                        oDataConventionModel.AddEntitySet(table.Key, oDataConventionModel.AddEntityType(tableType));
                     }
 
                 });
@@ -67,39 +69,53 @@ namespace ODataBatching8.Service
                 {
                     if (table.All(x => x.TableAccessLevel > 0))
                     {
-                        EdmEntityType edmType = new EdmEntityType(EdmNamespaceName + "." + table.Key, table.Key);
-                        EdmStructuralProperty idProp = edmType.AddStructuralProperty("Id", EdmPrimitiveTypeKind.Guid, false);
-                        edmType.AddKeys(idProp);
+                        EdmEntityType edmType = new EdmEntityType(EdmNamespaceName, table.Key);
 
-                        container.AddEntitySet(table.Key, edmType);
-                        var allowedEntity = model.AddEntityType(EdmNamespaceName, table.Key);
-                        foreach (var field in table)
+
+                        foreach (var field in table.OrderBy(x => x.FieldOrder))
                         {
                             if (field.FieldAccessLevel > 0)
                             {
-                                if (!String.IsNullOrEmpty(field.FieldProperties) && field.FieldProperties.Contains("ForeignKey"))
+                                if (!String.IsNullOrEmpty(field.FieldProperties) && field.FieldProperties.Equals("Key"))
+                                {
+                                    EdmStructuralProperty idProp = edmType.AddStructuralProperty("Id", EdmPrimitiveTypeKind.Guid, false);
+                                    edmType.AddKeys(idProp);
+                                }
+                                else if (!String.IsNullOrEmpty(field.FieldProperties) && field.FieldProperties.Equals("ForeignKey"))
                                 {
                                     //would need to check multiple properties to see what I have like colleciton or such 
                                     var fkEntity = model.AddEntityType(EdmNamespaceName, field.FieldName);
                                     var fkId = fkEntity.AddStructuralProperty("Id", EdmPrimitiveTypeKind.Guid);
-                                    var allowedFKId = allowedEntity.AddStructuralProperty(field.FieldName + "Id", EdmPrimitiveTypeKind.Guid);
+                                    var allowedFKId = edmType.AddStructuralProperty(field.FieldName + "Id", EdmPrimitiveTypeKind.Guid);
                                     fkEntity.AddKeys(fkId);
-                                    var navFkEntity = allowedEntity.AddUnidirectionalNavigation(new EdmNavigationPropertyInfo()
-                                    {                                        
+                                    var navFkEntity = edmType.AddUnidirectionalNavigation(new EdmNavigationPropertyInfo()
+                                    {
                                         Name = field.FieldName,
                                         TargetMultiplicity = EdmMultiplicity.One,
                                         Target = fkEntity,
-                                        DependentProperties =new IEdmStructuralProperty[] { allowedFKId }, //Ref constraint Property
+                                        DependentProperties = new IEdmStructuralProperty[] { allowedFKId }, //Ref constraint Property
                                         PrincipalProperties = new IEdmStructuralProperty[] { fkId }, //Ref ReferencedProperty 
-                                    });                                    
-                                }                               
+                                    });
+                                }
+                                else if (!String.IsNullOrEmpty(field.FieldProperties) && field.FieldProperties.Equals("Collection"))
+                                {
+                                    var fkEntity = model.AddEntityType(EdmNamespaceName, field.FieldName);
+                                    var navFkEntity = edmType.AddUnidirectionalNavigation(new EdmNavigationPropertyInfo()
+                                    {
+                                        Name = field.FieldName,
+                                        TargetMultiplicity = EdmMultiplicity.Many,
+                                        Target = fkEntity,
+                                    });
+                                }
                                 else
                                 {
                                     var edmValue = EdmTypeUtil.DbTypeToEdmType(field.FieldDataType);
-                                    allowedEntity.AddStructuralProperty(field.FieldName, edmValue.Value);
+                                    edmType.AddStructuralProperty(field.FieldName, edmValue.Value);
                                 }
                             }
                         }
+                        model.AddElement(edmType);
+                        container.AddEntitySet(table.Key + "s", edmType);
                     }
 
                 });

@@ -19,7 +19,6 @@ namespace ODataBatching8.Models
         [Key]
         public Guid Id { get; set; }
         [Required]
-        [Column("ISBN")]
         [StringLength(30)]
         public string Isbn { get; set; }
         [Required]

@@ -35,13 +35,7 @@ namespace ODataBatching8
 
             services.AddDbContextFactory<BooksContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("BookDatabase")));
-
-            //services.TryAddSingleton<IODataModelProvider, MyODataModelProvider>();
-
-            //services.TryAddEnumerable(
-           //     ServiceDescriptor.Transient<IApplicationModelProvider, MyODataRoutingApplicationModelProvider>());
-
-           // services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, MyODataRoutingMatcherPolicy>());
+           
 
             services.AddControllers().AddOData(opt=>
                 opt.Select().Filter().Count().OrderBy().Expand().EnableQueryFeatures()
@@ -72,6 +66,7 @@ namespace ODataBatching8
             app.UseODataQueryRequest();
             app.UseODataBatching();
             app.UseHttpsRedirection();
+            app.UseODataRouteDebug();
             app.UseRouting();
 
             app.UseAuthorization();
@@ -91,10 +86,10 @@ namespace ODataBatching8
         {
             ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
             builder.EntitySet<Book>("Books");
-            builder.EntitySet<Groups>("Groups");
-            builder.EntitySet<Users>("Users");
-            
-            return builder.GetEdmModel();
+            //builder.EntitySet<Groups>("Groups");
+            //builder.EntitySet<Users>("Users");
+            var model = builder.GetEdmModel();
+            return model;
         }
 
         //private static IEdmModel GetEdmModel()
