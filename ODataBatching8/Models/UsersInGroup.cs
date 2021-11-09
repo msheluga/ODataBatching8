@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ODataBatching8.Models
 {
+    [Table("UsersInGroup")]
     public partial class UsersInGroup
     {
         [Key]
@@ -17,10 +18,10 @@ namespace ODataBatching8.Models
         public Guid GroupId { get; set; }
 
         [ForeignKey(nameof(GroupId))]
-        [InverseProperty(nameof(Groups.UsersInGroup))]
-        public virtual Groups Group { get; set; }
+        [InverseProperty("UsersInGroups")]
+        public virtual Group Group { get; set; }
         [ForeignKey(nameof(UserId))]
-        [InverseProperty(nameof(Users.UsersInGroup))]
-        public virtual Users User { get; set; }
+        [InverseProperty("UsersInGroups")]
+        public virtual User User { get; set; }
     }
 }

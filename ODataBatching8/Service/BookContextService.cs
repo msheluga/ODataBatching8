@@ -22,7 +22,7 @@ namespace ODataBatching8.Service
 
             var testUserId = new Guid("B726EA14-2A28-E9FE-D543-047FA58C6A82");
 
-            var permissions = dbContextFactory.Permission.Where(x => Guid.Equals(x.UserId, testUserId)).ToList();
+            var permissions = dbContextFactory.Permissions.Where(x => Guid.Equals(x.UserId, testUserId)).ToList();
 
             GetModel(permissions, oDataModelBuilder);
             return oDataModelBuilder.GetEdmModel();

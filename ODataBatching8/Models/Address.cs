@@ -9,11 +9,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ODataBatching8.Models
 {
+    [Table("Address")]
     public partial class Address
     {
         public Address()
         {
-            Book = new HashSet<Book>();
+            Books = new HashSet<Book>();
         }
 
         [Key]
@@ -25,7 +26,7 @@ namespace ODataBatching8.Models
         [StringLength(50)]
         public string Street { get; set; }
 
-        [InverseProperty("Address")]
-        public virtual ICollection<Book> Book { get; set; }
+        [InverseProperty(nameof(Book.Address))]
+        public virtual ICollection<Book> Books { get; set; }
     }
 }

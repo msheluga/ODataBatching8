@@ -26,19 +26,19 @@ namespace ODataBatching8.Controllers
         public IActionResult Get()
         {
             dbContext = this.dbContextFactory.CreateDbContext();
-            return Ok(dbContext.Book);
+            return Ok(dbContext.Books);
         }
 
         [EnableQuery]
         public async Task<IActionResult> Get([FromODataUri] Guid key)
         {
             dbContext = this.dbContextFactory.CreateDbContext();
-            return Ok(await dbContext.Book.Where(x=>x.Id == key).FirstOrDefaultAsync());
+            return Ok(await dbContext.Books.Where(x=>x.Id == key).FirstOrDefaultAsync());
         }
         [HttpPost]
         public async Task<IActionResult> Post(Book insert)
         {
-            return Ok(await dbContext.Book.AddAsync(insert));
+            return Ok(await dbContext.Books.AddAsync(insert));
         }
 
         [HttpPatch]
@@ -46,7 +46,7 @@ namespace ODataBatching8.Controllers
         public async Task<IActionResult> Patch([FromODataUri] Guid key, Delta<Book> delta)
         {
             dbContext = this.dbContextFactory.CreateDbContext();
-            var previousEntity = await dbContext.Book.FindAsync(key);
+            var previousEntity = await dbContext.Books.FindAsync(key);
             if (previousEntity == null)
             {
                 return NotFound();
@@ -58,13 +58,13 @@ namespace ODataBatching8.Controllers
         public async Task<IActionResult> Delete([FromODataUri] Guid key)
         {
             dbContext = this.dbContextFactory.CreateDbContext();
-            var deletingBook = await dbContext.Book.FindAsync(key);
+            var deletingBook = await dbContext.Books.FindAsync(key);
             if (deletingBook == null)
             {
                 return NotFound();
             }
 
-            return Ok(dbContext.Book.Remove(deletingBook));
+            return Ok(dbContext.Books.Remove(deletingBook));
         }
 
 

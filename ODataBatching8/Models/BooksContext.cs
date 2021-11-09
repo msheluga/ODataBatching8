@@ -14,14 +14,14 @@ namespace ODataBatching8.Models
         {
         }
 
-        public virtual DbSet<Address> Address { get; set; }
-        public virtual DbSet<Book> Book { get; set; }
-        public virtual DbSet<BooksInGroups> BooksInGroups { get; set; }
-        public virtual DbSet<Groups> Groups { get; set; }
-        public virtual DbSet<Permission> Permission { get; set; }
-        public virtual DbSet<Press> Press { get; set; }
-        public virtual DbSet<Users> Users { get; set; }
-        public virtual DbSet<UsersInGroup> UsersInGroup { get; set; }
+        public virtual DbSet<Address> Addresses { get; set; }
+        public virtual DbSet<Book> Books { get; set; }
+        public virtual DbSet<BooksInGroup> BooksInGroups { get; set; }
+        public virtual DbSet<Group> Groups { get; set; }
+        public virtual DbSet<Permission> Permissions { get; set; }
+        public virtual DbSet<Press> Presses { get; set; }
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<UsersInGroup> UsersInGroups { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,19 +37,19 @@ namespace ODataBatching8.Models
                 entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
 
                 entity.HasOne(d => d.Address)
-                    .WithMany(p => p.Book)
+                    .WithMany(p => p.Books)
                     .HasForeignKey(d => d.AddressId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Book_Address");
 
                 entity.HasOne(d => d.Press)
-                    .WithMany(p => p.Book)
+                    .WithMany(p => p.Books)
                     .HasForeignKey(d => d.PressId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Book_Press");
             });
 
-            modelBuilder.Entity<BooksInGroups>(entity =>
+            modelBuilder.Entity<BooksInGroup>(entity =>
             {
                 entity.HasKey(e => new { e.BookId, e.GroupId });
 
@@ -66,7 +66,7 @@ namespace ODataBatching8.Models
                     .HasConstraintName("FK_BooksInGroups_Groups");
             });
 
-            modelBuilder.Entity<Groups>(entity =>
+            modelBuilder.Entity<Group>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
             });
@@ -81,7 +81,7 @@ namespace ODataBatching8.Models
                 entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             });
 
-            modelBuilder.Entity<Users>(entity =>
+            modelBuilder.Entity<User>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
             });
@@ -91,13 +91,13 @@ namespace ODataBatching8.Models
                 entity.HasKey(e => new { e.UserId, e.GroupId });
 
                 entity.HasOne(d => d.Group)
-                    .WithMany(p => p.UsersInGroup)
+                    .WithMany(p => p.UsersInGroups)
                     .HasForeignKey(d => d.GroupId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UsersInGroup_Groups");
 
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.UsersInGroup)
+                    .WithMany(p => p.UsersInGroups)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UsersInGroup_Users");

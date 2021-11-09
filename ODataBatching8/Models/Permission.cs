@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ODataBatching8.Models
 {
+    [Table("Permission")]
     public partial class Permission
     {
         [Key]
