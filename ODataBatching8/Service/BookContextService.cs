@@ -25,6 +25,7 @@ namespace ODataBatching8.Service
             var permissions = dbContextFactory.Permissions.Where(x => Guid.Equals(x.UserId, testUserId)).ToList();
 
             GetModel(permissions, oDataModelBuilder);
+            
             return oDataModelBuilder.GetEdmModel();
             //GetModel(permissions, model);
             //return model;
@@ -52,7 +53,7 @@ namespace ODataBatching8.Service
                             }
                         }
                         //remove the EntitySet
-                        //ssoDataConventionModel.RemoveEntitySet(table.Key);
+                        //oDataConventionModel.RemoveEntitySet(table.Key);
                         //oDataConventionModel.RemoveStructuralType(tableType);
                         oDataConventionModel.AddEntitySet(table.Key+"s", oDataConventionModel.AddEntityType(tableType));
                     }
