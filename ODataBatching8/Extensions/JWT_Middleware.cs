@@ -43,7 +43,7 @@ namespace ODataBatching8.Extensions
 
                 var securityKey = new SymmetricSecurityKey(key);
                 var configString = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["BookDatabase"];
-                //var userEdm = BooksContextService.GetEdmModel(configString);
+                var userEdm = BooksContextService.GetEdmModel(configString);
                 //context.Request.ODataFeature().Model = userEdm;
 
                 //var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
