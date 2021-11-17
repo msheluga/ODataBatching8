@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
+using ODataBatching8.Extensions;
 using ODataBatching8.Models;
 using ODataBatching8.Service;
 using System;
@@ -20,7 +21,7 @@ namespace ODataBatching8
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;            
+            Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
@@ -35,13 +36,14 @@ namespace ODataBatching8
 
             services.AddDbContextFactory<BooksContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("BookDatabase")));
-           
 
-            services.AddControllers().AddOData(opt=>
+
+            services.AddControllers().AddOData(opt =>
                 opt.Select().Filter().Count().OrderBy().Expand().EnableQueryFeatures()
-                .AddRouteComponents("odata", BooksContextService.GetEdmModel(Configuration.GetConnectionString("BookDatabase")), customBatchHandler)
-                //.AddRouteComponents("odata",GetEdmModel(), customBatchHandler)
-            );
+                //.AddRouteComponents("odata", BooksContextService.GetEdmModel(Configuration.GetConnectionString("BookDatabase")), customBatchHandler)
+                .AddRouteComponents("odata",GetEdmModel(), customBatchHandler)
+
+                );
 
             services.AddCors();
 
@@ -51,7 +53,7 @@ namespace ODataBatching8
             });
         }
 
-        
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -68,7 +70,7 @@ namespace ODataBatching8
             app.UseHttpsRedirection();
             app.UseODataRouteDebug();
             app.UseRouting();
-
+            app.UseMiddleware<JWT_Middleware>();
             app.UseAuthorization();
 
             app.UseCors(x => x
@@ -78,7 +80,7 @@ namespace ODataBatching8
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();                
+                endpoints.MapControllers();
             });
         }
 
@@ -86,8 +88,8 @@ namespace ODataBatching8
         {
             ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
             builder.EntitySet<Book>("Books");
-            //builder.EntitySet<Groups>("Groups");
-            //builder.EntitySet<Users>("Users");
+            builder.EntitySet<Group>("Groups");
+            builder.EntitySet<User>("Users");
             var model = builder.GetEdmModel();
             return model;
         }
@@ -118,5 +120,5 @@ namespace ODataBatching8
 
     }
 
-    
+
 }

@@ -40,7 +40,7 @@ namespace ODataBatching8.Service
                     if (table.All(x => x.TableAccessLevel > 0))
                     {
                         var tableType = Type.GetType(EdmNamespaceName + "." + table.Key);
-                        //builder.AddEntitySet(t.Name, builder.AddEntityType(t));
+                        
                         var typeConfig = oDataConventionModel.AddEntityType(tableType);
                         var tableTypeProp = tableType.GetProperties();
 
