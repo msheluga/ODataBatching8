@@ -12,7 +12,7 @@ namespace ODataBatching8.Models
     [Keyless]
     public partial class UserAccessView
     {
-        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
         [Required]
         [StringLength(255)]
         public string UserName { get; set; }

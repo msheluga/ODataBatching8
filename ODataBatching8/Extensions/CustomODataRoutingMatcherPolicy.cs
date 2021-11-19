@@ -82,12 +82,12 @@ namespace ODataBatching8.Extensions
                 }
                 
                 
-                var isValid = validateAuthHeader(auth, user);
-                if (auth != null && isValid)
+                var isValid = validateAuthHeader(auth, out user);
+                if (!user.ToString().Equals(new Guid().ToString()) && isValid)
                 {
                     var configString = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["BookDatabase"];
 
-                    IEdmModel model = BooksContextService.GetEdmModel(configString);
+                    IEdmModel model = BooksContextService.GetEdmModel(configString, user.ToString());
                     httpContext.Request.ODataFeature().Model = model;
                     if (candidate.Values.Any(v => v.Key.Equals("controller") && v.Value.Equals("Metadata")))
                     {
@@ -161,10 +161,10 @@ namespace ODataBatching8.Extensions
             }
         }
 
-        private bool validateAuthHeader(string auth, Guid user)
+        private bool validateAuthHeader(string auth, out Guid user)
         {
             var valid = false;
-
+            user = new Guid();
             try
             {
                 var token = auth.Split(" ").Last();
