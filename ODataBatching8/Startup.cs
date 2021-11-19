@@ -1,12 +1,16 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Batch;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
@@ -14,6 +18,7 @@ using ODataBatching8.Extensions;
 using ODataBatching8.Models;
 using ODataBatching8.Service;
 using System;
+using System.Linq;
 
 namespace ODataBatching8
 {
@@ -33,17 +38,24 @@ namespace ODataBatching8
             customBatchHandler.MessageQuotas.MaxOperationsPerChangeset = 10;
             customBatchHandler.MessageQuotas.MaxPartsPerBatch = 10;
             customBatchHandler.MessageQuotas.MaxNestingDepth = 2;
-
+            
+            IdentityModelEventSource.ShowPII = true;
             services.AddDbContextFactory<BooksContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("BookDatabase")));
-
-
+            
             services.AddControllers().AddOData(opt =>
                 opt.Select().Filter().Count().OrderBy().Expand().EnableQueryFeatures()
                 //.AddRouteComponents("odata", BooksContextService.GetEdmModel(Configuration.GetConnectionString("BookDatabase")), customBatchHandler)
                 .AddRouteComponents("odata",GetEdmModel(), customBatchHandler)
 
                 );
+            var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(MatcherPolicy) && d.ImplementationType.Name.Equals("ODataRoutingMatcherPolicy"));
+
+            if (descriptor != null)
+            {
+                services.Remove(descriptor);
+            }
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, CustomODataRoutingMatcherPolicy>());
 
             services.AddCors();
 
@@ -69,9 +81,18 @@ namespace ODataBatching8
             app.UseODataBatching();
             app.UseHttpsRedirection();
             app.UseODataRouteDebug();
+            app.UseExceptionHandler(c => c.Run(async context =>
+              {
+                  var exception = context.Features
+                    .Get<IExceptionHandlerPathFeature>()
+                    .Error;
+                  var response = new { error = exception.Message };
+                  await context.Response.WriteAsJsonAsync(response);
+              }));
+            
             app.UseRouting();
-            app.UseMiddleware<JWT_Middleware>();
             app.UseAuthorization();
+            //app.UseODataAuthorization(); //doesn't exist yet in beta
 
             app.UseCors(x => x
                 .AllowAnyOrigin()

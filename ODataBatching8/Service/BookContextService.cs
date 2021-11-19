@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Humanizer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using ODataBatching8.Models;
@@ -10,6 +11,7 @@ namespace ODataBatching8.Service
 {
     public static class BooksContextService
     {
+        
         internal static IEdmModel GetEdmModel(string connectionString)
         {
 
@@ -24,11 +26,11 @@ namespace ODataBatching8.Service
 
             var permissions = dbContextFactory.Permissions.Where(x => Guid.Equals(x.UserId, testUserId)).ToList();
 
-            GetModel(permissions, oDataModelBuilder);
+            //GetModel(permissions, oDataModelBuilder);
             
-            return oDataModelBuilder.GetEdmModel();
-            //GetModel(permissions, model);
-            //return model;
+            //return oDataModelBuilder.GetEdmModel();
+            GetModel(permissions, model);
+            return model;
         }
         private static void GetModel(List<Permission> permissions, ODataConventionModelBuilder oDataConventionModel)
         {
@@ -55,7 +57,7 @@ namespace ODataBatching8.Service
                         //remove the EntitySet
                         //oDataConventionModel.RemoveEntitySet(table.Key);
                         //oDataConventionModel.RemoveStructuralType(tableType);
-                        oDataConventionModel.AddEntitySet(table.Key+"s", oDataConventionModel.AddEntityType(tableType));
+                        oDataConventionModel.AddEntitySet(table.Key.Pluralize(), oDataConventionModel.AddEntityType(tableType));
                     }
 
                 });
@@ -116,7 +118,7 @@ namespace ODataBatching8.Service
                             }
                         }
                         model.AddElement(edmType);
-                        container.AddEntitySet(table.Key + "s", edmType);
+                        container.AddEntitySet(table.Key.Pluralize(), edmType);
                     }
 
                 });
