@@ -91,6 +91,7 @@ namespace ODataBatching8
               }));
             
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
             //app.UseODataAuthorization(); //doesn't exist yet in beta
 
