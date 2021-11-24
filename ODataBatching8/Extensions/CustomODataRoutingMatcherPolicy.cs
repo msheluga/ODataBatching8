@@ -56,12 +56,8 @@ namespace ODataBatching8.Extensions
             }
 
             IODataFeature odataFeature = httpContext.ODataFeature();
-            
-
-            if (odataFeature.Path != null)
-            {
-                return Task.CompletedTask;
-            }
+            var configString = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["BookDatabase"];
+                        
 
             // The goal of this method is to perform the final matching:
             // Map between route values matched by the template and the ones we want to expose to the action for binding.
@@ -85,8 +81,13 @@ namespace ODataBatching8.Extensions
                 var isValid = validateAuthHeader(auth, out user);
                 if (!user.ToString().Equals(new Guid().ToString()) && isValid)
                 {
-                    var configString = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["BookDatabase"];
-
+                    
+                    if (odataFeature.Path != null)
+                    {
+                        // If we have the OData path setting, it means there's some Policy working.
+                        // Let's skip this default OData matcher policy.
+                        return Task.CompletedTask;
+                    }
                     IEdmModel model = BooksContextService.GetEdmModel(configString, user.ToString());
                     httpContext.Request.ODataFeature().Model = model;
                     if (candidate.Values.Any(v => v.Key.Equals("controller") && v.Value.Equals("Metadata")))
