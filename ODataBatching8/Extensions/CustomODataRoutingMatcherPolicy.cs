@@ -56,7 +56,10 @@ namespace ODataBatching8.Extensions
             }
 
             IODataFeature odataFeature = httpContext.ODataFeature();
+            Guid user = default;
             var configString = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["BookDatabase"];
+            string auth = httpContext.Request.Headers["Authorization"];
+
             if (odataFeature.Path != null)
             {
                 // If we have the OData path setting, it means there's some Policy working.
@@ -64,68 +67,68 @@ namespace ODataBatching8.Extensions
                 return Task.CompletedTask;
             }
 
-            // The goal of this method is to perform the final matching:
-            // Map between route values matched by the template and the ones we want to expose to the action for binding.
-            // (tweaking the route values is fine here)
-            // Invalidating the candidate if the key/function values are not valid/missing.
-            // Perform overload resolution for functions by looking at the candidates and their metadata.
-            for (var i = 0; i < candidates.Count; i++)
+            var isValid = validateAuthHeader(auth, out user);
+
+            if (user.ToString().Equals(new Guid().ToString()) || !isValid)
             {
-                Guid user = default;
-                IODataRoutingMetadata metadata = null;
-                string auth = httpContext.Request.Headers["Authorization"];
+                return Task.FromException(new Exception("Forbidden"));
+            }
+                // The goal of this method is to perform the final matching:
+                // Map between route values matched by the template and the ones we want to expose to the action for binding.
+                // (tweaking the route values is fine here)
+                // Invalidating the candidate if the key/function values are not valid/missing.
+                // Perform overload resolution for functions by looking at the candidates and their metadata.
+                for (var i = 0; i < candidates.Count; i++)
+            {
+               
+                IODataRoutingMetadata metadata = null;                
 
                 ref CandidateState candidate = ref candidates[i];
                 
                 if (!candidates.IsValidCandidate(i))
                 {
                     continue;
-                }
-                
-                
-                var isValid = validateAuthHeader(auth, out user);
-                if (!user.ToString().Equals(new Guid().ToString()) && isValid)
+                }                                
+                                
+                    
+                IEdmModel model = BooksContextService.GetEdmModel(configString, user.ToString());
+                httpContext.Request.ODataFeature().Model = model;
+                if (candidate.Values.Any(v => v.Key.Equals("controller") && v.Value.Equals("Metadata")))
                 {
-                    
-                    
-                    IEdmModel model = BooksContextService.GetEdmModel(configString, user.ToString());
-                    httpContext.Request.ODataFeature().Model = model;
-                    if (candidate.Values.Any(v => v.Key.Equals("controller") && v.Value.Equals("Metadata")))
-                    {
-                        metadata = candidate.Endpoint.Metadata.OfType<IODataRoutingMetadata>().FirstOrDefault();
-                        SetODataPath(httpContext, candidates, odataFeature, i, metadata, candidate);
-                        return Task.CompletedTask;
-                    }
-                    else
-                    {
-                        IEdmEntitySet entitySet = model.FindDeclaredEntitySet(candidate.Values["controller"].ToString());
-                        var entityType = Type.GetType("ODataBatching8.Models." + candidate.Values["controller"].ToString().Singularize());
-                        if (entitySet == null)
-                        {
-                            return Task.FromException(new Exception("Forbidden"));                            
-                        }
-                        var entityDeclaredType = model.FindDeclaredType(entityType.FullName);
-                        var edmEntityType = entityDeclaredType as IEdmEntityType;
-                        IList<ODataSegmentTemplate> segments = new List<ODataSegmentTemplate>
-                        {
-                            new EntitySetSegmentTemplate(entitySet),
-                            CreateKeySegment(edmEntityType, entitySet)
-                        };
-                        var pathTemplate = new ODataPathTemplate(segments);
-                        metadata = new ODataRoutingMetadata("odata", model, pathTemplate);
-                        if (metadata == null)
-                        {
-                            continue;
-                        }
-                        if (odataFeature.Path != null)
-                        {
-                            // If it's odata endpoint, and we have a path set, let other odata endpoints invalid.
-                            candidates.SetValidity(i, false);
-                            continue;
-                        }
-                        SetODataPath(httpContext, candidates, odataFeature, i, metadata, candidate);
-                    }
+                    metadata = candidate.Endpoint.Metadata.OfType<IODataRoutingMetadata>().FirstOrDefault();
+                    SetODataPath(httpContext, candidates, odataFeature, i, metadata, candidate);
+                    return Task.CompletedTask;
                 }
+                else
+                {
+                    IEdmEntitySet entitySet = model.FindDeclaredEntitySet(candidate.Values["controller"].ToString());
+                    var entityType = Type.GetType("ODataBatching8.Models." + candidate.Values["controller"].ToString().Singularize());
+                    if (entitySet == null)
+                    {
+                        return Task.FromException(new Exception("Forbidden"));                            
+                    }
+                    var entityDeclaredType = model.FindDeclaredType(entityType.FullName);
+                    var edmEntityType = entityDeclaredType as IEdmEntityType;
+                    IList<ODataSegmentTemplate> segments = new List<ODataSegmentTemplate>
+                    {
+                        new EntitySetSegmentTemplate(entitySet),
+                        CreateKeySegment(edmEntityType, entitySet)
+                    };
+                    var pathTemplate = new ODataPathTemplate(segments);
+                    metadata = new ODataRoutingMetadata("odata", model, pathTemplate);
+                    if (metadata == null)
+                    {
+                        continue;
+                    }
+                    if (odataFeature.Path != null)
+                    {
+                        // If it's odata endpoint, and we have a path set, let other odata endpoints invalid.
+                        candidates.SetValidity(i, false);
+                        continue;
+                    }
+                    SetODataPath(httpContext, candidates, odataFeature, i, metadata, candidate);
+                }
+                
 
                 if (metadata == null)
                 {
