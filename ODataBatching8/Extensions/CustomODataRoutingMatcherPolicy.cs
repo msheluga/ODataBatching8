@@ -169,6 +169,10 @@ namespace ODataBatching8.Extensions
         {
             var valid = false;
             user = new Guid();
+            if (String.IsNullOrEmpty(auth))
+            {
+                return valid;
+            }
             try
             {
                 var token = auth.Split(" ").Last();
