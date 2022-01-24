@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Batch;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +14,7 @@ using Microsoft.OpenApi.Models;
 using ODataBatching8.Models;
 using ODataBatching8.Service;
 using System;
+using System.Linq;
 
 namespace ODataBatching8
 {
@@ -42,6 +44,15 @@ namespace ODataBatching8
                 .AddRouteComponents("odata", BooksContextService.GetEdmModel(Configuration.GetConnectionString("BookDatabase")), customBatchHandler)
                 //.AddRouteComponents("odata",GetEdmModel(), customBatchHandler)
             );
+
+            var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(MatcherPolicy) && d.ImplementationType.Name.Equals("ODataRoutingMatcherPolicy"));
+
+            if (descriptor != null)
+            {
+                services.Remove(descriptor);
+            }
+
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, CustomODataRoutingMatcherPolicy>());
 
             services.AddCors();
 
