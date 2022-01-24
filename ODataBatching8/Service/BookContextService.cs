@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Humanizer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using ODataBatching8.Models;
@@ -10,7 +11,8 @@ namespace ODataBatching8.Service
 {
     public static class BooksContextService
     {
-        internal static IEdmModel GetEdmModel(string connectionString)
+        
+        internal static IEdmModel GetEdmModel(string connectionString, string userId)
         {
 
             var model = new EdmModel();
@@ -20,16 +22,17 @@ namespace ODataBatching8.Service
             BooksContext dbContextFactory = new BooksContext(new DbContextOptionsBuilder<BooksContext>()
                                             .UseSqlServer(connectionString).Options);
 
-            var testUserId = new Guid("B726EA14-2A28-E9FE-D543-047FA58C6A82");
+            //var testUserId = new Guid("B726EA14-2A28-E9FE-D543-047FA58C6A82");
 
-            var permissions = dbContextFactory.Permissions.Where(x => Guid.Equals(x.UserId, testUserId)).ToList();
+            var permissions = dbContextFactory.UserAccessViews.Where(x => Guid.Equals(x.UserId, userId)).ToList();
 
             GetModel(permissions, oDataModelBuilder);
+            
             return oDataModelBuilder.GetEdmModel();
             //GetModel(permissions, model);
             //return model;
         }
-        private static void GetModel(List<Permission> permissions, ODataConventionModelBuilder oDataConventionModel)
+        private static void GetModel(List<UserAccessView> permissions, ODataConventionModelBuilder oDataConventionModel)
         {
             const string EdmNamespaceName = "ODataBatching8.Models";
             permissions.OrderBy(x=>x.TableName).GroupBy(x => x.TableName)
@@ -39,7 +42,7 @@ namespace ODataBatching8.Service
                     if (table.All(x => x.TableAccessLevel > 0))
                     {
                         var tableType = Type.GetType(EdmNamespaceName + "." + table.Key);
-                        //builder.AddEntitySet(t.Name, builder.AddEntityType(t));
+                        
                         var typeConfig = oDataConventionModel.AddEntityType(tableType);
                         var tableTypeProp = tableType.GetProperties();
 
@@ -52,14 +55,14 @@ namespace ODataBatching8.Service
                             }
                         }
                         //remove the EntitySet
-                        //ssoDataConventionModel.RemoveEntitySet(table.Key);
+                        //oDataConventionModel.RemoveEntitySet(table.Key);
                         //oDataConventionModel.RemoveStructuralType(tableType);
-                        oDataConventionModel.AddEntitySet(table.Key+"s", oDataConventionModel.AddEntityType(tableType));
+                        oDataConventionModel.AddEntitySet(table.Key.Pluralize(), oDataConventionModel.AddEntityType(tableType));
                     }
 
                 });
         }
-        private static void GetModel(List<Permission> permissions, EdmModel model)
+        private static void GetModel(List<UserAccessView> permissions, EdmModel model)
         {
             const string EdmNamespaceName = "ODataBatching8.Models";
             EdmEntityContainer container = new EdmEntityContainer(EdmNamespaceName, "Container");
@@ -74,7 +77,7 @@ namespace ODataBatching8.Service
 
                         foreach (var field in table.OrderBy(x => x.FieldOrder))
                         {
-                            if (field.FieldAccessLevel > 0)
+                            if (field.FieldLevelAccess > 0)
                             {
                                 if (!String.IsNullOrEmpty(field.FieldProperties) && field.FieldProperties.Equals("Key"))
                                 {
@@ -115,7 +118,7 @@ namespace ODataBatching8.Service
                             }
                         }
                         model.AddElement(edmType);
-                        container.AddEntitySet(table.Key + "s", edmType);
+                        container.AddEntitySet(table.Key.Pluralize(), edmType);
                     }
 
                 });

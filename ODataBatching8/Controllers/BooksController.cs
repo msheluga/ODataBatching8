@@ -23,10 +23,10 @@ namespace ODataBatching8.Controllers
         }
 
         [EnableQuery]        
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             dbContext = this.dbContextFactory.CreateDbContext();
-            return Ok(dbContext.Books);
+            return Ok(await dbContext.Books.ToListAsync());
         }
 
         [EnableQuery]

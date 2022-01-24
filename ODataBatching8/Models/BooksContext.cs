@@ -21,6 +21,7 @@ namespace ODataBatching8.Models
         public virtual DbSet<Permission> Permissions { get; set; }
         public virtual DbSet<Press> Presses { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<UserAccessView> UserAccessViews { get; set; }
         public virtual DbSet<UsersInGroup> UsersInGroups { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -84,6 +85,11 @@ namespace ODataBatching8.Models
             modelBuilder.Entity<User>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+            });
+
+            modelBuilder.Entity<UserAccessView>(entity =>
+            {
+                entity.ToView("UserAccessView");
             });
 
             modelBuilder.Entity<UsersInGroup>(entity =>

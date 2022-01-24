@@ -44,6 +44,10 @@
       {
          "Name": "[dbo].[UsersInGroup]",
          "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[UserAccessView]",
+         "ObjectType": 3
       }
    ],
    "UiHint": "DESKTOP-VRTAIJ0.Books",
