@@ -57,6 +57,15 @@ namespace ODataBatching8
             }
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, CustomODataRoutingMatcherPolicy>());
 
+            var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(MatcherPolicy) && d.ImplementationType.Name.Equals("ODataRoutingMatcherPolicy"));
+
+            if (descriptor != null)
+            {
+                services.Remove(descriptor);
+            }
+
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, CustomODataRoutingMatcherPolicy>());
+
             services.AddCors();
 
             services.AddSwaggerGen(c =>
