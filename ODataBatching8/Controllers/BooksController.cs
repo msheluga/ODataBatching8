@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
+using ODataBatching8.Data;
 using ODataBatching8.Models;
 using System;
 using System.Collections.Generic;

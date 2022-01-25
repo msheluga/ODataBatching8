@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using ODataBatching8.Controllers;
+using ODataBatching8.Data;
 using ODataBatching8.Models;
 using System;
 using System.Collections.Generic;

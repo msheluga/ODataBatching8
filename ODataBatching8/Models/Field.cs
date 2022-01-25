@@ -8,20 +8,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ODataBatching8.Models
 {
-    [Table("Permission")]
-    public partial class Permission
+    public partial class Field
     {
+        public Field()
+        {
+            UserFieldAccesses = new HashSet<UserFieldAccess>();
+        }
+
         [Key]
         public Guid Id { get; set; }
-        public Guid UserId { get; set; }
-        [Required]
-        public string TableName { get; set; }
-        public short TableAccessLevel { get; set; }
+        public Guid TableId { get; set; }
         [Required]
         public string FieldName { get; set; }
-        public short FieldAccessLevel { get; set; }
+        [Required]
         public string FieldDataType { get; set; }
         public string FieldProperties { get; set; }
-        public int? FieldOrder { get; set; }
+        [Column("fieldOrder")]
+        public int FieldOrder { get; set; }
+
+        [ForeignKey(nameof(TableId))]
+        [InverseProperty("Fields")]
+        public virtual Table Table { get; set; }
+        [InverseProperty(nameof(UserFieldAccess.Field))]
+        public virtual ICollection<UserFieldAccess> UserFieldAccesses { get; set; }
     }
 }

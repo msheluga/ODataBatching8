@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
+using ODataBatching8.Data;
 using ODataBatching8.Extensions;
 using ODataBatching8.Models;
 using ODataBatching8.Service;
@@ -46,8 +47,7 @@ namespace ODataBatching8
             services.AddControllers().AddOData(opt =>
                 opt.Select().Filter().Count().OrderBy().Expand().EnableQueryFeatures()
                 //.AddRouteComponents("odata", BooksContextService.GetEdmModel(Configuration.GetConnectionString("BookDatabase")), customBatchHandler)
-                .AddRouteComponents("odata",GetEdmModel(), customBatchHandler)
-
+                .AddRouteComponents("odata",GetEdmModel(), customBatchHandler)               
                 );
             var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(MatcherPolicy) && d.ImplementationType.Name.Equals("ODataRoutingMatcherPolicy"));
 
@@ -77,7 +77,7 @@ namespace ODataBatching8
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ODataBatching8 v1"));
             }
 
-            app.UseODataQueryRequest();
+            app.UseODataQueryRequest();            
             app.UseODataBatching();
             app.UseHttpsRedirection();
             app.UseODataRouteDebug();

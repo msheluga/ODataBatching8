@@ -8,19 +8,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ODataBatching8.Models
 {
-    [Table("UsersInGroup")]
-    public partial class UsersInGroup
+    [Table("UserFieldAccess")]
+    public partial class UserFieldAccess
     {
         [Key]
+        public Guid Id { get; set; }
         public Guid UserId { get; set; }
-        [Key]
-        public Guid GroupId { get; set; }
+        public Guid FieldId { get; set; }
+        public int FieldLevelAccess { get; set; }
 
-        [ForeignKey(nameof(GroupId))]
-        [InverseProperty("UsersInGroups")]
-        public virtual Group Group { get; set; }
+        [ForeignKey(nameof(FieldId))]
+        [InverseProperty("UserFieldAccesses")]
+        public virtual Field Field { get; set; }
         [ForeignKey(nameof(UserId))]
-        [InverseProperty("UsersInGroups")]
+        [InverseProperty("UserFieldAccesses")]
         public virtual User User { get; set; }
     }
 }

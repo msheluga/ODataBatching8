@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
+using ODataBatching8.Data;
 using ODataBatching8.Models;
 using System;
 using System.Collections.Generic;
