@@ -1,37 +1,38 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
-using ODataBatching8.Data;
 using ODataBatching8.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ODataBatching8.Data;
 
 namespace ODataBatching8.Controllers
 {
-    public class UsersController : ControllerBase
+    public class AddressesController : ControllerBase
     {
         private readonly IDbContextFactory<BooksContext> dbContextFactory;
         private BooksContext dbContext;
-
-        public UsersController(IDbContextFactory<BooksContext> dbContextFactory)
+        public AddressesController(IDbContextFactory<BooksContext> dbContextFactory)
         {
             this.dbContextFactory = dbContextFactory;
-            dbContext = this.dbContextFactory.CreateDbContext();
         }
 
         [EnableQuery]
         public IActionResult Get()
         {
-            return Ok(dbContext.Users);
+            dbContext = this.dbContextFactory.CreateDbContext();
+            return Ok(dbContext.Addresses);
         }
 
         [EnableQuery]
         public async Task<IActionResult> Get([FromODataUri] Guid key)
         {
-            return Ok(await dbContext.Users.FindAsync(key));
+            dbContext = this.dbContextFactory.CreateDbContext();
+            return Ok(await dbContext.Addresses.Where(x => x.Id == key).FirstOrDefaultAsync());
         }
     }
 }

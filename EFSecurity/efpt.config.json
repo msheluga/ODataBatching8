@@ -1,6 +1,6 @@
 ﻿{
    "CodeGenerationMode": 2,
-   "ContextClassName": "BooksContext",
+   "ContextClassName": "PermissionContext",
    "ContextNamespace": "Data",
    "DefaultDacpacSchema": null,
    "FilterSchemas": false,
@@ -8,77 +8,93 @@
    "ModelNamespace": "Models",
    "OutputContextPath": "Data",
    "OutputPath": "Models",
-   "ProjectRootNamespace": "ODataBatching8",
+   "ProjectRootNamespace": "EFSecurity",
    "Schemas": null,
    "SelectedHandlebarsLanguage": 0,
    "SelectedToBeGenerated": 0,
    "Tables": [
       {
-         "Name": "[dbo].[Address]",
+         "Name": "[dbo].[ApplicationPermissionGroups]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Book]",
+         "Name": "[dbo].[ApplicationRequests]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[BooksInGroups]",
+         "Name": "[dbo].[AspNetRoleClaims]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[DeviceCodes]",
+         "Name": "[dbo].[AspNetRoles]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Fields]",
+         "Name": "[dbo].[AspNetUserClaims]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Groups]",
+         "Name": "[dbo].[AspNetUserLogins]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Keys]",
+         "Name": "[dbo].[AspNetUserRoles]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Permission]",
+         "Name": "[dbo].[AspNetUsers]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[PersistedGrants]",
+         "Name": "[dbo].[AspNetUserTokens]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Press]",
+         "Name": "[dbo].[Countries]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Tables]",
+         "Name": "[dbo].[E920Apis]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[UserFieldAccess]",
+         "Name": "[dbo].[E920Claims]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Users]",
+         "Name": "[dbo].[E920TableFields]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[UsersInGroup]",
+         "Name": "[dbo].[E920Tables]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[UserTableAccess]",
+         "Name": "[dbo].[OrganizationClaims]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[UserAccessView]",
-         "ObjectType": 3
+         "Name": "[dbo].[Organizations]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PermissionGroupE920TableFields]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PermissionGroupE920Tables]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PermissionGroups]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[RequestedSystemDetails]",
+         "ObjectType": 0
       }
    ],
-   "UiHint": "DESKTOP-VRTAIJ0.Books",
+   "UiHint": "DESKTOP-VRTAIJ0.Permissions",
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
    "UseDbContextSplitting": false,
@@ -86,7 +102,7 @@
    "UseHandleBars": false,
    "UseInflector": true,
    "UseLegacyPluralizer": true,
-   "UseManyToManyEntity": true,
+   "UseManyToManyEntity": false,
    "UseNoConstructor": false,
    "UseNoDefaultConstructor": true,
    "UseNoNavigations": false,
